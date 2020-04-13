@@ -1,4 +1,9 @@
 # -*- coding: utf-8 -*-
+"""
+Created on Mon Apr 13 2020
+
+@author: E. Agustoni (GitHub: agus-struct)
+"""
 
 from motif import motif
 
