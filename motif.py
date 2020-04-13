@@ -48,10 +48,10 @@ class motif():
     
     def scan(self, protein_sequence, plot=False, toList=False):
         
-        result = self.__scan_func(protein_sequence)
+        scoreboard = self.__scan_func(protein_sequence)
             
         if plot is True:
-            y = [s for s, p, f in result]
+            y = [s for s, p, f in scoreboard]
             x = range(len(y))
             #w = len(self.__pwm)
             #xticks = list(protein_sequence[:-w])
@@ -70,22 +70,19 @@ class motif():
             #plt.xticks(x, xticks, fontsize=8)
             #plt.grid()
             plt.show()
-            
-        return result if toList is False else list(result)
+        
+        return scoreboard
     
     def find(self, protein_sequence, score_threshold=float("-inf"), return_best=True):
         
-        scoreboard = []
-        for s, p, f in self.__scan_func(protein_sequence):
-            if s > score_threshold:
-                scoreboard.append([s, p, f])
-                
-        scoreboard = sorted(scoreboard, key=lambda x: x[0])
+        scoreboard = sorted([x for x in self.__scan_func(protein_sequence) if x[0] > score_threshold],
+                             key=lambda x: x[0],
+                             reverse=True)
         
         if len(scoreboard) == 0:
             return None
         elif return_best:
-            spf = scoreboard[-1]
+            spf = scoreboard[0]
             return spf[0], spf[1], spf[2]
         else:
             return scoreboard
@@ -152,6 +149,7 @@ class motif():
         return cons, maxval
     
     def __scan_func(self, sequence):
+        result = []
         w = len(self.__pwm)
         for position in range(0, len(sequence)-w):
             fragment = sequence[position:position+w]
@@ -159,7 +157,8 @@ class motif():
             for position_fragment, letter in enumerate(fragment):
                 score_sum += self.__pwm[position_fragment][letter]
             average_score = np.average(score_sum)
-            yield average_score, position, fragment
+            result.append((average_score, position, fragment))
+        return result
 
 
             
